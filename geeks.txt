@@ -1,0 +1,52 @@
+import speech_recognition as venu
+from time import ctime
+import time
+import os
+from gtts import gTTS
+ 
+def speak(soundString):
+    print(soundString)
+    tts = gTTS(text=soundString, lang='en')
+    tts.save("sound.mp3")
+    os.system("mpg321 sound.mp3")
+ 
+def recordSound():
+    # Record Sound
+    r = venu.Recognizer()
+    with venu.Microphone() as source:
+        print("Say something!")
+        sound = r.listen(source)
+ 
+    # Speech recognition using Google Speech Recognition
+    data = ""
+    try:
+        # Uses the default API key
+        # To use another API key: `r.recognize_google(sound, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+        data = r.recognize_google(sound)
+        print("You said: " + data)
+    except venu.UnknownValueError:
+        print("Google Speech Recognition could not understand sound")
+    except venu.RequestError as e:
+        print("Could not request results from Google Speech Recognition service; {0}".format(e))
+ 
+    return data
+ 
+def santy(data):
+    if "how are you" in data:
+        speak("I am fine")
+ 
+    if "what time is it" in data:
+        speak(ctime())
+ 
+    if "where is" in data:
+        data = data.split(" ")
+        location = data[2]
+        speak("Hold on Guys, I will show you where " + location + " is.")
+        os.system("chromium-browser https://www.google.nl/maps/place/" + location + "/&amp;")
+ 
+# initialization
+time.sleep(2)
+speak("Hi Guys, what can I do for you?")
+while 1:
+    data = recordSound()
+    santy(data)
